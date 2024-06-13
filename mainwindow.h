@@ -32,5 +32,6 @@ private:
     void initializeListView();
     void jumpToMyComputer();
     void jumpTo(const QString &path);
+    void openFileByDefaultDesktopApp(const QString &filePath);
 };
 #endif // MAINWINDOW_H

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QMessageBox>
+#include <QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -66,7 +67,21 @@ void MainWindow::interactWithObject(const QModelIndex &index)
     if (fileInfo.isDir()){
         jumpTo(fileInfo.absoluteFilePath());
     }
+    else if (fileInfo.isFile()){
+        openFileByDefaultDesktopApp(fileInfo.absoluteFilePath());
+    }
 }
+
+//BUG doesn't open a file/directory named on russian language
+//or if directory have space
+void MainWindow::openFileByDefaultDesktopApp(const QString &filePath)
+{
+    if(!QDesktopServices::openUrl(QUrl(filePath))){
+        QMessageBox::critical(this, "File Explorer", "File dont open", QMessageBox::Ok);
+        return;
+    }
+}
+
 //TODO need clean
 void MainWindow::changeDirectoryUp()
 {
