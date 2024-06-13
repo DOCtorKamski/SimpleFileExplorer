@@ -22,6 +22,7 @@ public:
 private slots:
     void interactWithObject(const QModelIndex &index);
     void changeDirectoryUp();
+    void jumpToLineEditPath();
 
 private:
     Ui::MainWindow *ui;

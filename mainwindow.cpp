@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -8,7 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connect(ui->listView_explorer, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(interactWithObject(QModelIndex)));
-    connect(ui->pushButton_Back, SIGNAL(clicked()), this, SLOT(changeDirectoryUp()));
+    connect(ui->pushButton_back, SIGNAL(clicked()), this, SLOT(changeDirectoryUp()));
+    connect(ui->lineEdit_absolutePath, SIGNAL(returnPressed()), this, SLOT(jumpToLineEditPath()));
+    connect(ui->pushButton_enter, SIGNAL(clicked()), this, SLOT(jumpToLineEditPath()));
 
     initializeListView();
     jumpToMyComputer();
@@ -36,11 +39,25 @@ void MainWindow::jumpToMyComputer()
 
 void MainWindow::jumpTo(const QString &path)
 {
+    if (path == ""){
+        jumpToMyComputer();
+        return;
+    }
     QDir dir{path};
+    if(!dir.exists()){
+        QMessageBox::critical(this, "File Explorer", "Diretory do not exist", QMessageBox::Ok);
+        ui->lineEdit_absolutePath->setText(m_currentPath);
+        return;
+    }
     m_currentPath = dir.absolutePath();
     ui->lineEdit_absolutePath->setText(m_currentPath);
     QModelIndex index = m_explorerModel->setRootPath(m_currentPath);
     ui->listView_explorer->setRootIndex(index);
+}
+
+void MainWindow::jumpToLineEditPath()
+{
+    jumpTo(ui->lineEdit_absolutePath->text());
 }
 
 void MainWindow::interactWithObject(const QModelIndex &index)
